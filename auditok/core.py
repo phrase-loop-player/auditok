@@ -136,9 +136,7 @@ def split(
         validator = AudioEnergyValidator(
             energy_threshold, source.sw, source.ch, use_channel=use_channel
         )
-    mode = (
-        StreamTokenizer.DROP_TRAILING_SILENCE if drop_trailing_silence else 0
-    )
+    mode = StreamTokenizer.DROP_TRAILING_SILENCE if drop_trailing_silence else 0
     if strict_min_dur:
         mode |= StreamTokenizer.STRICT_MIN_LENGTH
     min_length = _duration_to_nb_windows(min_dur, analysis_window, math.ceil)
@@ -186,7 +184,7 @@ def split(
     source.open()
     token_gen = tokenizer.tokenize(source, generator=True)
     region_gen = (
-        _make_audio_region(
+        _make_audio_region_meta(
             token[0],
             token[1],
             source.block_dur,
@@ -238,7 +236,7 @@ def _duration_to_nb_windows(
     return int(round_fn(duration / analysis_window + epsilon))
 
 
-def _make_audio_region(
+def _make_audio_region_meta(
     data_frames,
     start_frame,
     frame_duration,
@@ -270,7 +268,7 @@ def _make_audio_region(
     data = b"".join(data_frames)
     duration = len(data) / (sampling_rate * sample_width * channels)
     meta = {"start": start, "end": start + duration}
-    return AudioRegion(data, sampling_rate, sample_width, channels, meta)
+    return meta
 
 
 def _read_chunks_online(max_read, **kwargs):
@@ -771,9 +769,7 @@ class AudioRegion(object):
 
     def __truediv__(self, n):
         if not isinstance(n, int) or n <= 0:
-            raise TypeError(
-                "AudioRegion can only be divided by a positive int"
-            )
+            raise TypeError("AudioRegion can only be divided by a positive int")
         samples_per_sub_region, rest = divmod(len(self), n)
         onset = 0
         sub_regions = []
@@ -1022,9 +1018,7 @@ class StreamTokenizer:
             )
 
         if min_length <= 0 or min_length > max_length:
-            err_msg = (
-                "'min_length' must be > 0 and <= 'max_length' (value={0})"
-            )
+            err_msg = "'min_length' must be > 0 and <= 'max_length' (value={0})"
             raise ValueError(err_msg.format(min_length))
 
         if max_continuous_silence >= max_length:

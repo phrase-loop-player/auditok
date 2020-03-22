@@ -11,9 +11,9 @@ with open("auditok/__init__.py", "rt") as f:
     long_desc = open("README.rst", "rt").read()
 
 setup(
-    name="auditok",
+    name="forked-auditok-split-without-data",
     version=version,
-    url="http://github.com/amsehili/auditok/",
+    url="https://github.com/phrase-loop-player/auditok",
     license="MIT",
     author="Amine Sehili",
     author_email="amine.sehili@gmail.com",
